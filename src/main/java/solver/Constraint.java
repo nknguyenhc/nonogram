@@ -7,11 +7,20 @@ import java.util.Stack;
 
 public class Constraint {
     private static class PossibleCombination {
-        private final int[] numbers;
+        public final int[] realization;
         public boolean isSatisfiable;
 
-        public PossibleCombination(int[] numbers) {
-            this.numbers = numbers;
+        public PossibleCombination(int[] numbers, int length) {
+            this.realization = new int[length];
+            int i = 0;
+            boolean isChosen = false;
+            for (int number: numbers) {
+                for (int j = 0; j < number; j++) {
+                    this.realization[i] = isChosen ? 2 : 1;
+                    i++;
+                }
+                isChosen = !isChosen;
+            }
         }
 
         public void updateSatisfiability(int[] cells) {
@@ -19,19 +28,11 @@ public class Constraint {
         }
 
         private boolean checkSatisfiability(int[] cells) {
-            int i = 0;
-            boolean isChosen = false;
-            for (int number: this.numbers) {
-                for (int j = 0; j < number; j++) {
-                    if (!isChosen && cells[i] == 2) {
-                        return false;
-                    }
-                    if (isChosen && cells[i] == 1) {
-                        return false;
-                    }
-                    i++;
+            assert cells.length == this.realization.length;
+            for (int i = 0; i < cells.length; i++) {
+                if (cells[i] != 0 && cells[i] != this.realization[i]) {
+                    return false;
                 }
-                isChosen = !isChosen;
             }
             return true;
         }
@@ -42,15 +43,17 @@ public class Constraint {
 
         @Override
         public String toString() {
-            return Arrays.toString(this.numbers);
+            return Arrays.toString(this.realization);
         }
     }
 
     private final List<PossibleCombination> possibleCombinations;
     private int possibleCombinationCount;
     private final Stack<List<Integer>> removedCombinations = new Stack<>();
+    private final int length;
 
     public Constraint(int[] numbers, int[] cells) {
+        this.length = cells.length;
         int[] combination = new int[2 * numbers.length + 1];
         combination[0] = 0;
         int sum = 0;
@@ -75,7 +78,7 @@ public class Constraint {
         assert index % 2 == 0;
         if (index == combination.length - 1) {
             combination[index] = difference;
-            PossibleCombination possibleCombination = new PossibleCombination(combination.clone());
+            PossibleCombination possibleCombination = new PossibleCombination(combination.clone(), cells.length);
             possibleCombination.updateSatisfiability(cells);
             if (possibleCombination.isSatisfiable) {
                 this.possibleCombinations.add(possibleCombination);
@@ -116,6 +119,17 @@ public class Constraint {
 
     public int possibilityCount() {
         return this.possibleCombinationCount;
+    }
+
+    public List<int[]> getPossibilities() {
+        List<int[]> possibilities = new ArrayList<>();
+        for (PossibleCombination combination: this.possibleCombinations) {
+            if (!combination.isSatisfiable) {
+                continue;
+            }
+            possibilities.add(combination.realization);
+        }
+        return possibilities;
     }
 
     @Override
