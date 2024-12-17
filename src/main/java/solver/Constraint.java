@@ -50,10 +50,9 @@ public class Constraint {
     private final List<PossibleCombination> possibleCombinations;
     private int possibleCombinationCount;
     private final Stack<List<Integer>> removedCombinations = new Stack<>();
-    private final int length;
+    private boolean isResolved = false;
 
     public Constraint(int[] numbers, int[] cells) {
-        this.length = cells.length;
         int[] combination = new int[2 * numbers.length + 1];
         combination[0] = 0;
         int sum = 0;
@@ -122,6 +121,7 @@ public class Constraint {
     }
 
     public List<int[]> getPossibilities() {
+        assert this.isResolved;
         List<int[]> possibilities = new ArrayList<>();
         for (PossibleCombination combination: this.possibleCombinations) {
             if (!combination.isSatisfiable) {
@@ -130,6 +130,19 @@ public class Constraint {
             possibilities.add(combination.realization);
         }
         return possibilities;
+    }
+
+    public boolean isResolved() {
+        return this.isResolved;
+    }
+
+    public void resolve() {
+        assert this.possibleCombinationCount > 0;
+        this.isResolved = true;
+    }
+
+    public void unresolve() {
+        this.isResolved = false;
     }
 
     @Override
