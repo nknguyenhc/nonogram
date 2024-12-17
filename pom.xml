@@ -35,6 +35,7 @@
                             </mainClass>
                         </manifest>
                     </archive>
+                    <finalName>main</finalName>
                 </configuration>
             </plugin>
             <!-- Package as an executable jar -->
@@ -43,6 +44,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>server.Server</mainClass>
+                    <finalName>server</finalName>
                 </configuration>
             </plugin>
         </plugins>
