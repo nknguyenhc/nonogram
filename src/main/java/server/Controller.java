@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import solver.Board;
+import solver.exceptions.InvalidConstraintException;
 
 @RestController
 public class Controller {
@@ -39,7 +40,8 @@ public class Controller {
     }
 
     @PostMapping("/solve")
-    PuzzleOutput solve(@RequestBody PuzzleInput input) throws PuzzleVerificationException {
+    PuzzleOutput solve(@RequestBody PuzzleInput input)
+            throws PuzzleVerificationException, InvalidConstraintException {
         this.verifyPuzzleInput(input);
         Board board = new Board(input.board, input.rowConstraints, input.colConstraints);
         boolean[][] solution = board.solve();
@@ -87,5 +89,11 @@ public class Controller {
     @ExceptionHandler(PuzzleVerificationException.class)
     public PuzzleOutput puzzleVerificationExceptionHandler(Exception e) {
         return new PuzzleOutput(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidConstraintException.class)
+    public PuzzleOutput invalidConstraintExceptionHandler() {
+        return new PuzzleOutput("At least one of the constraints is invalid");
     }
 }

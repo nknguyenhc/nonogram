@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class ConstraintTest {
     @Test
-    public void testOnePossibility() {
+    public void testOnePossibility() throws Exception {
         Constraint constraint = new Constraint(new int[] {1, 3}, new int[] {0, 0, 0, 0, 0});
         Assert.assertEquals(1, constraint.possibilityCount());
         constraint.update(new int[] {2, 0, 2, 0, 0});
@@ -22,7 +22,7 @@ public class ConstraintTest {
     }
 
     @Test
-    public void testMultiplePossibility() {
+    public void testMultiplePossibility() throws Exception {
         Constraint constraint = new Constraint(new int[] {1, 1}, new int[] {0, 0, 0, 0, 0});
         Assert.assertEquals(6, constraint.possibilityCount());
         constraint.update(new int[] {0, 2, 0, 0, 0});
@@ -45,7 +45,7 @@ public class ConstraintTest {
     }
 
     @Test
-    public void testUndo() {
+    public void testUndo() throws Exception {
         Constraint constraint = new Constraint(new int[] {1, 1}, new int[] {0, 1, 0, 0, 0});
         Assert.assertEquals(4, constraint.possibilityCount());
         constraint.update(new int[] {2, 1, 0, 0, 1});

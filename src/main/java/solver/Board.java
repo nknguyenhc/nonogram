@@ -1,5 +1,7 @@
 package solver;
 
+import solver.exceptions.InvalidConstraintException;
+
 /**
  * Notes on the rows and cols:
  * {@code 0} means not decided.
@@ -21,7 +23,8 @@ public class Board {
      * @param colConstraints The list of constraints on the columns,
      *                       each element is an array corresponding to one column.
      */
-    public Board(boolean[][] cells, int[][] rowConstraints, int[][] colConstraints) {
+    public Board(boolean[][] cells, int[][] rowConstraints, int[][] colConstraints)
+            throws InvalidConstraintException {
         int rowCount = cells.length;
         int colCount = cells[0].length;
         this.rows = this.toRows(cells);

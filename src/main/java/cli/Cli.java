@@ -1,6 +1,7 @@
 package cli;
 
 import solver.Board;
+import solver.exceptions.InvalidConstraintException;
 
 import java.util.Scanner;
 
@@ -27,7 +28,13 @@ public class Cli {
             colConstraints[i] = this.getConstraint();
         }
 
-        Board solver = new Board(board, rowConstraints, colConstraints);
+        Board solver;
+        try {
+            solver = new Board(board, rowConstraints, colConstraints);
+        } catch (InvalidConstraintException e) {
+            this.printSolution(null);
+            return;
+        }
         boolean[][] solution = solver.solve();
         this.printSolution(solution);
     }
@@ -108,6 +115,10 @@ public class Cli {
     }
 
     private void printSolution(boolean[][] solution) {
+        if (solution == null) {
+            System.out.println("No solution");
+            return;
+        }
         for (boolean[] booleans : solution) {
             for (int j = 0; j < solution[0].length; j++) {
                 System.out.print(booleans[j] ? 'X' : '.');

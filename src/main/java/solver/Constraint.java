@@ -1,5 +1,7 @@
 package solver;
 
+import solver.exceptions.InvalidConstraintException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +54,7 @@ public class Constraint {
     private final Stack<List<Integer>> removedCombinations = new Stack<>();
     private boolean isResolved = false;
 
-    public Constraint(int[] numbers, int[] cells) {
+    public Constraint(int[] numbers, int[] cells) throws InvalidConstraintException {
         int[] combination = new int[2 * numbers.length + 1];
         combination[0] = 0;
         int sum = 0;
@@ -65,6 +67,10 @@ public class Constraint {
                 combination[2 * i + 2] = 1;
                 sum += numbers[i] + 1;
             }
+        }
+
+        if (cells.length < sum) {
+            throw new InvalidConstraintException();
         }
 
         this.possibleCombinations = new ArrayList<>();
