@@ -15,17 +15,14 @@ public class Constraint {
         }
 
         public void updateSatisfiability(int[] cells) {
-            this.isSatisfiable = this.isLeftSatisfiable(cells) && this.isRightSatisfiable(cells);
+            this.isSatisfiable = this.checkSatisfiability(cells);
         }
 
-        private boolean isLeftSatisfiable(int[] cells) {
+        private boolean checkSatisfiability(int[] cells) {
             int i = 0;
             boolean isChosen = false;
             for (int number: this.numbers) {
                 for (int j = 0; j < number; j++) {
-                    if (cells[i] == 0) {
-                        return true;
-                    }
                     if (!isChosen && cells[i] == 2) {
                         return false;
                     }
@@ -33,28 +30,6 @@ public class Constraint {
                         return false;
                     }
                     i++;
-                }
-                isChosen = !isChosen;
-            }
-            return true;
-        }
-
-        private boolean isRightSatisfiable(int[] cells) {
-            int i = cells.length - 1;
-            boolean isChosen = false;
-            for (int numberI = this.numbers.length - 1; numberI >= 0; numberI--) {
-                int number = this.numbers[numberI];
-                for (int j = 0; j < number; j++) {
-                    if (cells[i] == 0) {
-                        return true;
-                    }
-                    if (!isChosen && cells[i] == 2) {
-                        return false;
-                    }
-                    if (isChosen && cells[i] == 1) {
-                        return false;
-                    }
-                    i--;
                 }
                 isChosen = !isChosen;
             }
@@ -112,7 +87,7 @@ public class Constraint {
             addPossibleCombination(combination, cells, difference - increment, index + 2);
             combination[index]++;
         }
-        combination[index] -= difference;
+        combination[index] -= (difference + 1);
     }
 
     public void update(int[] cells) {
