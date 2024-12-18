@@ -2,6 +2,8 @@ package solver;
 
 import solver.exceptions.InvalidConstraintException;
 
+import java.util.function.Consumer;
+
 /**
  * Notes on the rows and cols:
  * {@code 0} means not decided.
@@ -70,15 +72,16 @@ public class Board {
      *         and {@code false} meaning the cell is not filled.
      */
     public boolean[][] solve() {
-        boolean isSolved = this.solve(this.rowConstraints.length + this.colConstraints.length);
-        if (isSolved) {
-            return this.toSolutionBoard();
-        } else {
-            return null;
-        }
+        boolean isSolved = this.solve(this.rowConstraints.length + this.colConstraints.length, null);
+        return this.toSolutionBoard(isSolved);
     }
 
-    private boolean solve(int unsolvedCount) {
+    public boolean[][] solve(Consumer<Step> consumer) {
+        boolean isSolved = this.solve(this.rowConstraints.length + this.colConstraints.length, consumer);
+        return this.toSolutionBoard(isSolved);
+    }
+
+    private boolean solve(int unsolvedCount, Consumer<Step> consumer) {
         if (unsolvedCount == 0) {
             return true;
         }
@@ -88,15 +91,29 @@ public class Board {
         assert bestRowConstraintIndex != -1 || bestColConstraintIndex != -1;
 
         if (bestRowConstraintIndex == -1) {
-            return this.resolveCol(unsolvedCount, bestColConstraintIndex);
+            return this.resolveCol(unsolvedCount, bestColConstraintIndex, consumer);
         } else if (bestColConstraintIndex == -1) {
-            return this.resolveRow(unsolvedCount, bestRowConstraintIndex);
+            return this.resolveRow(unsolvedCount, bestRowConstraintIndex, consumer);
         } else if (this.rowConstraints[bestRowConstraintIndex].possibilityCount() <
                 this.colConstraints[bestColConstraintIndex].possibilityCount()) {
-            return this.resolveCol(unsolvedCount, bestColConstraintIndex);
+            return this.resolveCol(unsolvedCount, bestColConstraintIndex, consumer);
         } else {
-            return this.resolveRow(unsolvedCount, bestRowConstraintIndex);
+            return this.resolveRow(unsolvedCount, bestRowConstraintIndex, consumer);
         }
+    }
+
+    private int[][] cloneBoard() {
+        int[][] board = new int[this.rows.length][this.rows[0].length];
+        for (int i = 0; i < this.rows.length; i++) {
+            for (int j = 0; j < this.rows[0].length; j++) {
+                board[i][j] = this.rows[i][j];
+            }
+        }
+        return board;
+    }
+
+    private Step getStep(boolean isRow, int index) {
+        return new Step(this.cloneBoard(), isRow, index);
     }
 
     private int findBestRowConstraint() {
@@ -127,15 +144,21 @@ public class Board {
         return index;
     }
 
-    private boolean resolveCol(int unsolvedCount, int colIndex) {
+    private boolean resolveCol(int unsolvedCount, int colIndex, Consumer<Step> consumer) {
         int[] originalCol = this.cols[colIndex];
         this.colConstraints[colIndex].resolve();
         for (int[] colNumbers: this.colConstraints[colIndex].getPossibilities()) {
+            if (consumer != null) {
+                consumer.accept(this.getStep(false, colIndex));
+            }
             boolean isUpdated = this.updateCol(colIndex, colNumbers);
             if (!isUpdated) {
                 continue;
             }
-            boolean isSolved = this.solve(unsolvedCount - 1);
+            if (consumer != null) {
+                consumer.accept(this.getStep(false, colIndex));
+            }
+            boolean isSolved = this.solve(unsolvedCount - 1, consumer);
             if (isSolved) {
                 return true;
             }
@@ -182,15 +205,21 @@ public class Board {
         }
     }
 
-    private boolean resolveRow(int unresolvedCount, int rowIndex) {
+    private boolean resolveRow(int unresolvedCount, int rowIndex, Consumer<Step> consumer) {
         int[] originalRow = this.rows[rowIndex];
         this.rowConstraints[rowIndex].resolve();
         for (int[] rowNumbers: this.rowConstraints[rowIndex].getPossibilities()) {
+            if (consumer != null) {
+                consumer.accept(this.getStep(true, rowIndex));
+            }
             boolean isUpdated = this.updateRow(rowIndex, rowNumbers);
             if (!isUpdated) {
                 continue;
             }
-            boolean isSolved = this.solve(unresolvedCount - 1);
+            if (consumer != null) {
+                consumer.accept(this.getStep(true, rowIndex));
+            }
+            boolean isSolved = this.solve(unresolvedCount - 1, consumer);
             if (isSolved) {
                 return true;
             }
@@ -237,7 +266,10 @@ public class Board {
         }
     }
 
-    private boolean[][] toSolutionBoard() {
+    private boolean[][] toSolutionBoard(boolean isSolved) {
+        if (!isSolved) {
+            return null;
+        }
         boolean[][] result = new boolean[this.rows.length][this.rows[0].length];
         for (int i = 0; i < this.rows.length; i++) {
             for (int j = 0; j < this.rows[0].length; j++) {

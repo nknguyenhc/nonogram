@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import solver.Board;
+import solver.Step;
 import solver.exceptions.InvalidConstraintException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class Controller {
@@ -20,15 +24,23 @@ public class Controller {
     private static class PuzzleOutput {
         public boolean success;
         public boolean[][] solution;
+        public List<Step> steps;
         public String error;
 
-        public PuzzleOutput(boolean[][] solution) {
+        public PuzzleOutput(boolean[][] solution, List<Step> steps) {
             this.success = true;
             this.solution = solution;
+            this.steps = steps;
         }
 
-        public  PuzzleOutput(String error) {
+        public PuzzleOutput(String error) {
             this.success = false;
+            this.error = error;
+        }
+
+        public PuzzleOutput(String error, List<Step> steps) {
+            this.success = false;
+            this.steps = steps;
             this.error = error;
         }
     }
@@ -44,11 +56,12 @@ public class Controller {
             throws PuzzleVerificationException, InvalidConstraintException {
         this.verifyPuzzleInput(input);
         Board board = new Board(input.board, input.rowConstraints, input.colConstraints);
-        boolean[][] solution = board.solve();
+        List<Step> steps = new ArrayList<>();
+        boolean[][] solution = board.solve(steps::add);
         if (solution == null) {
-            return new PuzzleOutput("Unsolvable puzzle");
+            return new PuzzleOutput("Unsolvable puzzle", steps);
         } else {
-            return new PuzzleOutput(solution);
+            return new PuzzleOutput(solution, steps);
         }
     }
 
