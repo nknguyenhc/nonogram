@@ -1,11 +1,17 @@
+<script setup lang="ts">
+defineProps<{
+  width: string;
+}>();
+</script>
+
 <template>
   <div class="cross"></div>
 </template>
 
 <style scoped>
 .cross {
-  width: 50px;
-  height: 50px;
+  width: v-bind(width);
+  height: v-bind(width);
   position: relative;
 }
 

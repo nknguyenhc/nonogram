@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import Cross from './Cross.vue';
 
 const props = defineProps<{
   data: string | boolean;
   toggleCell: () => void;
 }>();
+
+const cellWidth = ref('50px');
 </script>
 
 <template>
@@ -12,18 +15,17 @@ const props = defineProps<{
     :class="{ chosen: props.data === true, cell: true }"
     @click="props.toggleCell"
   >
-    <Cross v-if="props.data === 'X'" />
+    <Cross v-if="props.data === 'X'" :width="cellWidth" />
   </div>
 </template>
 
 <style scoped>
 .cell {
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: v-bind(cellWidth);
+  height: v-bind(cellWidth);
   border: 1px solid black;
   text-align: center;
-  line-height: 50px;
 }
 .chosen {
   background-color: lightblue;

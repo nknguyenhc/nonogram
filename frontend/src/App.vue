@@ -22,7 +22,7 @@ const toggleCell = (row: number, col: number) => {
 const height = computed(() => board.value.length);
 const setHeight = (height: number) => {
   if (height <= 0) {
-    alert('Height must be greater than 0');
+    setTimeout(() => alert('Height must be greater than 0'));
     return;
   }
   if (height <= board.value.length) {
@@ -40,7 +40,7 @@ const setHeight = (height: number) => {
 const width = computed(() => board.value[0].length);
 const setWidth = (width: number) => {
   if (width <= 0) {
-    alert('Width must be greater than 0');
+    setTimeout(() => alert('Width must be greater than 0'));
     return;
   }
   if (width <= board.value[0].length) {
