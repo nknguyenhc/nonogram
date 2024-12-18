@@ -19,12 +19,11 @@ const props = defineProps<{
 <style scoped>
 .cell {
   display: inline-block;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
   border: 1px solid black;
   text-align: center;
-  line-height: 100px;
-  font-size: 24px;
+  line-height: 50px;
 }
 .chosen {
   background-color: lightblue;

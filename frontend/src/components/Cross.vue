@@ -4,8 +4,8 @@
 
 <style scoped>
 .cross {
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
   position: relative;
 }
 
@@ -16,7 +16,7 @@
   top: 50%;
   left: 50%;
   width: 100%;
-  height: 10px;
+  height: 5px;
   background-color: black;
 }
 

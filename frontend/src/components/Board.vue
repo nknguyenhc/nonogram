@@ -24,6 +24,7 @@ const props = defineProps<{
 .board {
   display: flex;
   flex-direction: column;
+  padding: 60px;
 }
 .row {
   display: flex;
