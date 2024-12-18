@@ -8,18 +8,15 @@ defineProps<{
   width: number;
   setWidth: (width: number) => void;
   getSolution: () => void;
+  eraseSolution: () => void;
+  editable: boolean;
 }>();
 </script>
 
 <template>
   <div class="controller">
-    <Buttons :getSolution />
-    <Dimension
-      :height="height"
-      :setWidth="setWidth"
-      :width="width"
-      :setHeight="setHeight"
-    />
+    <Buttons :getSolution :eraseSolution :editable />
+    <Dimension :height :setWidth :width :setHeight :editable />
   </div>
 </template>
 

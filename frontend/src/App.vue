@@ -13,6 +13,9 @@ const board = ref<('X' | boolean)[][]>([
 ]);
 
 const toggleCell = (row: number, col: number) => {
+  if (solution.value !== null) {
+    return;
+  }
   if (board.value[row][col] === false) {
     board.value[row][col] = 'X';
   } else {
@@ -22,6 +25,9 @@ const toggleCell = (row: number, col: number) => {
 
 const rowConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
 const setRowConstraint = (index: number, constraint: string) => {
+  if (solution.value !== null) {
+    return;
+  }
   if (constraint.trim() === '') {
     rowConstraints.value[index] = [];
     return;
@@ -41,6 +47,9 @@ const setRowConstraint = (index: number, constraint: string) => {
 
 const colConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
 const setColConstraint = (index: number, constraint: string) => {
+  if (solution.value !== null) {
+    return;
+  }
   if (constraint.trim() === '') {
     colConstraints.value[index] = [];
     return;
@@ -60,6 +69,9 @@ const setColConstraint = (index: number, constraint: string) => {
 
 const height = computed(() => board.value.length);
 const setHeight = (height: number) => {
+  if (solution.value !== null) {
+    return;
+  }
   if (height <= 0) {
     setTimeout(() => alert('Height must be greater than 0'));
     return;
@@ -85,6 +97,9 @@ const setHeight = (height: number) => {
 
 const width = computed(() => board.value[0].length);
 const setWidth = (width: number) => {
+  if (solution.value !== null) {
+    return;
+  }
   if (width <= 0) {
     setTimeout(() => alert('Width must be greater than 0'));
     return;
@@ -113,6 +128,7 @@ export type Step = {
 const solution = ref<Step[] | null>(null);
 const stepIndex = ref<number>(0);
 const currentStep = computed(() => solution.value?.[stepIndex.value]);
+const editable = computed(() => solution.value === null);
 
 watch(
   () => currentStep.value,
@@ -174,19 +190,25 @@ const firstStep = () => {
 const lastStep = () => {
   stepIndex.value = solution.value!.length - 1;
 };
+
+const eraseSolution = () => {
+  solution.value = null;
+  stepIndex.value = 0;
+};
 </script>
 
 <template>
   <div class="app">
     <div class="board-container">
       <Board
-        :board="board"
-        :toggleCell="toggleCell"
-        :rowConstraints="rowConstraints"
-        :colConstraints="colConstraints"
-        :setRowConstraint="setRowConstraint"
-        :setColConstraint="setColConstraint"
-        :currentStep="currentStep"
+        :board
+        :toggleCell
+        :rowConstraints
+        :colConstraints
+        :setRowConstraint
+        :setColConstraint
+        :currentStep
+        :editable
       />
       <Steps
         v-if="solution"
@@ -196,7 +218,15 @@ const lastStep = () => {
         :lastStep
       />
     </div>
-    <Controller :height :setHeight :width :setWidth :getSolution />
+    <Controller
+      :height
+      :setHeight
+      :width
+      :setWidth
+      :getSolution
+      :eraseSolution
+      :editable
+    />
   </div>
 </template>
 

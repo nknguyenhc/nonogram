@@ -13,6 +13,7 @@ const props = defineProps<{
   setColConstraint?: (constraint: string) => void;
   isRowConstraintHighlighted?: boolean;
   isColConstraintHighlighted?: boolean;
+  editable: boolean;
 }>();
 
 const cellWidth = ref('50px');
@@ -29,12 +30,14 @@ const cellWidth = ref('50px');
       :rowConstraint
       :setRowConstraint
       :isHighlighted="isRowConstraintHighlighted"
+      :editable
     />
     <ColConstraint
       v-if="colConstraint && setColConstraint"
       :colConstraint
       :setColConstraint
       :isHighlighted="isColConstraintHighlighted"
+      :editable
     />
   </div>
 </template>

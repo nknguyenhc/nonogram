@@ -4,6 +4,7 @@ defineProps<{
   setHeight: (height: number) => void;
   width: number;
   setWidth: (width: number) => void;
+  editable: boolean;
 }>();
 </script>
 
@@ -13,6 +14,7 @@ defineProps<{
       Height:
       <input
         type="number"
+        :disabled="!editable"
         :value="height"
         @input="
           (event) => setHeight(Number((event.target as HTMLInputElement).value))
@@ -23,6 +25,7 @@ defineProps<{
       Width:
       <input
         type="number"
+        :disabled="!editable"
         :value="width"
         @input="
           (event) => setWidth(Number((event.target as HTMLInputElement).value))

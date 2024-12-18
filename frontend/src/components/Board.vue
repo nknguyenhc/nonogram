@@ -10,6 +10,7 @@ const props = defineProps<{
   setRowConstraint: (index: number, constraint: string) => void;
   setColConstraint: (index: number, constraint: string) => void;
   currentStep?: Step;
+  editable: boolean;
 }>();
 </script>
 
@@ -41,6 +42,7 @@ const props = defineProps<{
         :isColConstraintHighlighted="
           currentStep?.isRow === false && currentStep?.index === cellIndex
         "
+        :editable
       />
     </div>
   </div>

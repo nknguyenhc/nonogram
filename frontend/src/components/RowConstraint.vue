@@ -3,6 +3,7 @@ defineProps<{
   rowConstraint: number[];
   setRowConstraint: (constraint: string) => void;
   isHighlighted?: boolean;
+  editable: boolean;
 }>();
 </script>
 
@@ -10,6 +11,7 @@ defineProps<{
   <div class="row-constraint" @click="(event) => event.stopPropagation()">
     <input
       :class="{ highlighted: isHighlighted }"
+      :disabled="!editable"
       type="text"
       value="1"
       @input="
