@@ -19,6 +19,36 @@ const toggleCell = (row: number, col: number) => {
   }
 };
 
+const rowConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
+const setRowConstraint = (index: number, constraint: string) => {
+  const parts = constraint
+    .trim()
+    .split(' ')
+    .map((part) => parseInt(part));
+  for (const part of parts) {
+    if (isNaN(part)) {
+      setTimeout(() => alert('Invalid row constraint!'));
+      return;
+    }
+  }
+  rowConstraints.value[index] = parts;
+};
+
+const colConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
+const setColConstraint = (index: number, constraint: string) => {
+  const parts = constraint
+    .trim()
+    .split(' ')
+    .map((part) => parseInt(part));
+  for (const part of parts) {
+    if (isNaN(part)) {
+      setTimeout(() => alert('Invalid column constraint!'));
+      return;
+    }
+  }
+  colConstraints.value[index] = parts;
+};
+
 const height = computed(() => board.value.length);
 const setHeight = (height: number) => {
   if (height <= 0) {
@@ -27,12 +57,19 @@ const setHeight = (height: number) => {
   }
   if (height <= board.value.length) {
     board.value = board.value.slice(0, height);
+    rowConstraints.value = rowConstraints.value.slice(0, height);
   } else {
     board.value = [
       ...board.value,
       ...Array.from({ length: height - board.value.length }, () =>
         Array.from({ length: board.value[0].length }, () => false),
       ),
+    ];
+    rowConstraints.value = [
+      ...rowConstraints.value,
+      ...Array.from({ length: height - rowConstraints.value.length }, () => [
+        1,
+      ]),
     ];
   }
 };
@@ -45,11 +82,16 @@ const setWidth = (width: number) => {
   }
   if (width <= board.value[0].length) {
     board.value = board.value.map((row) => row.slice(0, width));
+    colConstraints.value = colConstraints.value.slice(0, width);
   } else {
     board.value = board.value.map((row) => [
       ...row,
       ...Array.from({ length: width - row.length }, () => false),
     ]);
+    colConstraints.value = [
+      ...colConstraints.value,
+      ...Array.from({ length: width - colConstraints.value.length }, () => [1]),
+    ];
   }
 };
 
@@ -82,7 +124,14 @@ const getSolution = () => {
 
 <template>
   <div class="app">
-    <Board :board :toggleCell />
+    <Board
+      :board
+      :toggleCell
+      :rowConstraints
+      :colConstraints
+      :setRowConstraint
+      :setColConstraint
+    />
     <Controller :height :setHeight :width :setWidth :getSolution />
   </div>
 </template>

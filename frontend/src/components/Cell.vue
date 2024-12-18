@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Cross from './Cross.vue';
+import RowConstraint from './RowConstraint.vue';
+import ColConstraint from './ColConstraint.vue';
 
 const props = defineProps<{
   data: 'X' | boolean;
   toggleCell: () => void;
+  rowConstraint?: number[];
+  colConstraint?: number[];
+  setRowConstraint?: (constraint: string) => void;
+  setColConstraint?: (constraint: string) => void;
 }>();
 
 const cellWidth = ref('50px');
@@ -16,6 +22,16 @@ const cellWidth = ref('50px');
     @click="props.toggleCell"
   >
     <Cross v-if="props.data === 'X'" :width="cellWidth" />
+    <RowConstraint
+      v-if="rowConstraint && setRowConstraint"
+      :rowConstraint
+      :setRowConstraint
+    />
+    <ColConstraint
+      v-if="colConstraint && setColConstraint"
+      :colConstraint
+      :setColConstraint
+    />
   </div>
 </template>
 
@@ -26,6 +42,7 @@ const cellWidth = ref('50px');
   height: v-bind(cellWidth);
   border: 1px solid black;
   text-align: center;
+  position: relative;
 }
 .chosen {
   background-color: lightblue;
