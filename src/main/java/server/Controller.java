@@ -52,7 +52,7 @@ public class Controller {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin
     @PostMapping("/solve")
     PuzzleOutput solve(@RequestBody PuzzleInput input)
             throws PuzzleVerificationException, InvalidConstraintException {
