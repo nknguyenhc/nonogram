@@ -129,6 +129,7 @@ const solution = ref<Step[] | null>(null);
 const stepIndex = ref<number>(0);
 const currentStep = computed(() => solution.value?.[stepIndex.value]);
 const editable = computed(() => solution.value === null);
+const maxStep = computed(() => solution.value?.length || 1);
 
 watch(
   () => currentStep.value,
@@ -195,6 +196,10 @@ const eraseSolution = () => {
   solution.value = null;
   stepIndex.value = 0;
 };
+
+const jumpToStep = (index: number) => {
+  stepIndex.value = index - 1;
+};
 </script>
 
 <template>
@@ -216,6 +221,9 @@ const eraseSolution = () => {
         :decrementStep
         :firstStep
         :lastStep
+        :maxStep
+        :stepIndex
+        :jumpToStep
       />
     </div>
     <Controller
