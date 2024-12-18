@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Board from './components/Board.vue';
 import Controller from './components/Controller.vue';
+import Steps from './components/Steps.vue';
 
 const board = ref<('X' | boolean)[][]>([
   [false, false, false, false, false],
@@ -21,6 +22,10 @@ const toggleCell = (row: number, col: number) => {
 
 const rowConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
 const setRowConstraint = (index: number, constraint: string) => {
+  if (constraint.trim() === '') {
+    rowConstraints.value[index] = [];
+    return;
+  }
   const parts = constraint
     .trim()
     .split(' ')
@@ -36,6 +41,10 @@ const setRowConstraint = (index: number, constraint: string) => {
 
 const colConstraints = ref<number[][]>([[1], [1], [1], [1], [1]]);
 const setColConstraint = (index: number, constraint: string) => {
+  if (constraint.trim() === '') {
+    colConstraints.value[index] = [];
+    return;
+  }
   const parts = constraint
     .trim()
     .split(' ')
@@ -95,13 +104,26 @@ const setWidth = (width: number) => {
   }
 };
 
-type Step = {
+export type Step = {
   isRow: boolean;
   index: number;
   board: ('X' | boolean)[][];
 };
 
 const solution = ref<Step[] | null>(null);
+const stepIndex = ref<number>(0);
+const currentStep = computed(() => solution.value?.[stepIndex.value]);
+
+watch(
+  () => currentStep.value,
+  (newValue) => {
+    if (newValue === undefined) {
+      board.value = board.value.map((row) => row.map(() => false));
+    } else {
+      board.value = newValue.board;
+    }
+  },
+);
 
 const getSolution = () => {
   fetch(import.meta.env.VITE_BACKEND_URL + '/solve', {
@@ -113,25 +135,67 @@ const getSolution = () => {
       board: board.value.map((row) =>
         row.map((cell) => (cell === 'X' ? true : false)),
       ),
+      rowConstraints: rowConstraints.value,
+      colConstraints: colConstraints.value,
     }),
   })
     .then((res) => res.json())
     .then((res) => {
-      console.log(res);
+      if (!res.success) {
+        setTimeout(() => alert(res.error));
+        return;
+      }
+      solution.value = res.steps.map((step: any) => ({
+        isRow: step.constraintInfo.isRow,
+        index: step.constraintInfo.index,
+        board: step.board.map((row: (0 | 1 | 2)[]) =>
+          row.map((cell) => (cell === 0 ? false : cell === 1 ? 'X' : true)),
+        ),
+      }));
     });
+};
+
+const incrementStep = () => {
+  if (stepIndex.value < solution.value!.length - 1) {
+    stepIndex.value++;
+  }
+};
+
+const decrementStep = () => {
+  if (stepIndex.value > 0) {
+    stepIndex.value--;
+  }
+};
+
+const firstStep = () => {
+  stepIndex.value = 0;
+};
+
+const lastStep = () => {
+  stepIndex.value = solution.value!.length - 1;
 };
 </script>
 
 <template>
   <div class="app">
-    <Board
-      :board
-      :toggleCell
-      :rowConstraints
-      :colConstraints
-      :setRowConstraint
-      :setColConstraint
-    />
+    <div class="board-container">
+      <Board
+        :board="board"
+        :toggleCell="toggleCell"
+        :rowConstraints="rowConstraints"
+        :colConstraints="colConstraints"
+        :setRowConstraint="setRowConstraint"
+        :setColConstraint="setColConstraint"
+        :currentStep="currentStep"
+      />
+      <Steps
+        v-if="solution"
+        :incrementStep
+        :decrementStep
+        :firstStep
+        :lastStep
+      />
+    </div>
     <Controller :height :setHeight :width :setWidth :getSolution />
   </div>
 </template>
@@ -143,5 +207,10 @@ const getSolution = () => {
   justify-content: space-between;
   gap: 40px;
   padding: 40px;
+}
+.board-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 </style>

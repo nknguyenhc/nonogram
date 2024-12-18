@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Step } from '@/App.vue';
 import Cell from './Cell.vue';
 
 const props = defineProps<{
@@ -8,6 +9,7 @@ const props = defineProps<{
   colConstraints: number[][];
   setRowConstraint: (index: number, constraint: string) => void;
   setColConstraint: (index: number, constraint: string) => void;
+  currentStep?: Step;
 }>();
 </script>
 
@@ -32,6 +34,12 @@ const props = defineProps<{
             ? (constraint: string) =>
                 props.setColConstraint(cellIndex, constraint)
             : undefined
+        "
+        :isRowConstraintHighlighted="
+          currentStep?.isRow && currentStep?.index === rowIndex
+        "
+        :isColConstraintHighlighted="
+          currentStep?.isRow === false && currentStep?.index === cellIndex
         "
       />
     </div>

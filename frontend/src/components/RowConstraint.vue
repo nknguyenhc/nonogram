@@ -2,12 +2,14 @@
 defineProps<{
   rowConstraint: number[];
   setRowConstraint: (constraint: string) => void;
+  isHighlighted?: boolean;
 }>();
 </script>
 
 <template>
   <div class="row-constraint" @click="(event) => event.stopPropagation()">
     <input
+      :class="{ highlighted: isHighlighted }"
       type="text"
       value="1"
       @input="
@@ -23,6 +25,9 @@ defineProps<{
   left: 0;
   top: 50%;
   transform: translate(-120%, -50%);
+}
+.highlighted {
+  background-color: lightgreen;
 }
 input {
   width: 80px;
