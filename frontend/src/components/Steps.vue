@@ -13,6 +13,7 @@ defineProps<{
 <template>
   <div class="steps-container">
     <input
+      class="slider"
       type="range"
       min="0"
       :max="maxStep"
@@ -36,6 +37,9 @@ defineProps<{
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+.slider {
+  width: 80%;
 }
 .steps {
   display: flex;
