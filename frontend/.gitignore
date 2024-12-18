@@ -31,3 +31,6 @@ coverage
 
 # package
 package-lock.json
+
+# environment
+.env

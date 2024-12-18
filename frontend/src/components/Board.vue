@@ -2,7 +2,7 @@
 import Cell from './Cell.vue';
 
 const props = defineProps<{
-  board: (string | boolean)[][];
+  board: ('X' | boolean)[][];
   toggleCell: (row: number, col: number) => void;
 }>();
 </script>

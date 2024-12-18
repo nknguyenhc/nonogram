@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import Cross from './Cross.vue';
 
 const props = defineProps<{
-  data: string | boolean;
+  data: 'X' | boolean;
   toggleCell: () => void;
 }>();
 

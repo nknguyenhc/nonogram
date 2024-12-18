@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import Board from './components/Board.vue';
 import Controller from './components/Controller.vue';
 
-const board = ref<(string | boolean)[][]>([
+const board = ref<('X' | boolean)[][]>([
   [false, false, false, false, false],
   [false, false, false, false, false],
   [false, false, false, false, false],
@@ -52,17 +52,38 @@ const setWidth = (width: number) => {
     ]);
   }
 };
+
+type Step = {
+  isRow: boolean;
+  index: number;
+  board: ('X' | boolean)[][];
+};
+
+const solution = ref<Step[] | null>(null);
+
+const getSolution = () => {
+  fetch(import.meta.env.VITE_BACKEND_URL + '/solve', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      board: board.value.map((row) =>
+        row.map((cell) => (cell === 'X' ? true : false)),
+      ),
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+    });
+};
 </script>
 
 <template>
   <div class="app">
     <Board :board :toggleCell />
-    <Controller
-      :height="height"
-      :setHeight="setHeight"
-      :width="width"
-      :setWidth="setWidth"
-    />
+    <Controller :height :setHeight :width :setWidth :getSolution />
   </div>
 </template>
 
