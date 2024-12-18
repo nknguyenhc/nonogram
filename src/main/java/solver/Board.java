@@ -96,9 +96,9 @@ public class Board {
             return this.resolveRow(unsolvedCount, bestRowConstraintIndex, consumer);
         } else if (this.rowConstraints[bestRowConstraintIndex].possibilityCount() <
                 this.colConstraints[bestColConstraintIndex].possibilityCount()) {
-            return this.resolveCol(unsolvedCount, bestColConstraintIndex, consumer);
-        } else {
             return this.resolveRow(unsolvedCount, bestRowConstraintIndex, consumer);
+        } else {
+            return this.resolveCol(unsolvedCount, bestColConstraintIndex, consumer);
         }
     }
 
